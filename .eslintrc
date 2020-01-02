@@ -1,0 +1,19 @@
+{
+  "env": {
+    "es6": true,
+    "node": true,
+    "mocha": true
+  },
+  "extends": ["plugin:import/errors", "eslint:recommended", "prettier"], // prettier should be in last position
+  "parserOptions": {
+    "ecmaVersion": 2018,
+    "allowImportExportEverywhere": true,
+    "sourceType": "module"
+  },
+  "rules": {
+    "import/no-unresolved": [2, { "commonjs": true } ], // Ensures an imported module can be resolved to a module on the local filesystem
+    "no-only-tests/no-only-tests": "error", // Designed to prevent you from committing .only tests to CI, disabling tests for your whole team.
+    "prettier/prettier": "error"
+  },
+  "plugins": ["no-only-tests", "prettier"]
+}

@@ -1,3 +1,4 @@
+(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 const { GeneticOptimizer } = require('geneticOptimizer');
 const STATES = 100;
 const MOVES = 100;
@@ -63,4 +64,41 @@ const geneticOptimizer = new GeneticOptimizer(options).optimize();
 const smartDotsOptimizer = geneticOptimizer;
 
 if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') module.exports.smartDotsOptimizer = smartDotsOptimizer;
-else window.smartDotsOptimizer = smartDotsOptimizer;
+if (window !== undefined) window.smartDotsOptimizer = smartDotsOptimizer;
+
+},{"geneticOptimizer":2}],2:[function(require,module,exports){
+class geneticOptimizer {
+  constructor({ initialStateGenerator, mutator, fitnessEvaluator }) {
+    //Function that returns an array of random states
+    this.initialStateGenerator = initialStateGenerator;
+
+    //Function that take a state and return an array of slightly modified states
+    this.mutator = mutator;
+
+    //Function that associate a fitness score to a given state
+    this.fitnessEvaluator = fitnessEvaluator;
+  }
+
+  *optimize() {
+    //Generate a population that is an array of states
+    let population = this.initialStateGenerator();
+    while (true) {
+      //Find Best state in the population
+      let bestFitness = Number.NEGATIVE_INFINITY;
+      const bestState = population.reduce((acc, curr) => {
+        let currentFitness = this.fitnessEvaluator(curr);
+        acc = currentFitness > bestFitness ? curr : acc;
+        bestFitness = currentFitness > bestFitness ? currentFitness : bestFitness;
+        return acc;
+      });
+
+      yield bestState;
+
+      //Mutate the best state to generate a new population
+      population = this.mutator(bestState);
+    }
+  }
+}
+module.exports.GeneticOptimizer = geneticOptimizer;
+
+},{}]},{},[1]);
