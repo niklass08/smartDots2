@@ -60,7 +60,16 @@ const fitnessEvaluator = state => {
 
 const options = { initialStateGenerator, mutator, fitnessEvaluator };
 const geneticOptimizer = new GeneticOptimizer(options).optimize();
-const smartDotsOptimizer = geneticOptimizer;
+const smartDotsOptimizer = function*() {
+  while (true) {
+    const speeds = geneticOptimizer.next().value;
+    yield { positions: speedArrayToPositionArray(speeds.bestState), popPos: speeds.population.map(state => speedArrayToPositionArray(state)) };
+  }
+};
 
-if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') module.exports.smartDotsOptimizer = smartDotsOptimizer;
-else window.smartDotsOptimizer = smartDotsOptimizer;
+if (typeof window === 'undefined') {
+  module.exports.smartDotsOptimizer = smartDotsOptimizer;
+} else {
+  window.smartDotsOptimizer = smartDotsOptimizer;
+  console.log(window.smartDotsOptimizer);
+}

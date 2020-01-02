@@ -20,6 +20,6 @@
     "webpack-cli": "^3.3.10"
   },
   "dependencies": {
-    "geneticoptimizer": "^1.0.2"
+    "geneticoptimizer": "^1.0.3"
   }
 }
