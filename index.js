@@ -1,10 +1,10 @@
-const { GeneticOptimizer } = require('geneticOptimizer');
-const STATES = 100;
-const MOVES = 100;
-const MIN = -1;
-const MAX = 1;
+import { GeneticOptimizer } from 'geneticOptimizer';
+const STATES = 200;
+const MOVES = 500;
+const MIN = -0.75;
+const MAX = 0.75;
 const MUTATION_RATE = 0.5;
-const MAX_SPEED = 2;
+const MAX_SPEED = 0.75;
 const GOAL = [100, 100];
 
 const getRandomArbitrary = (min, max) => {
@@ -42,11 +42,13 @@ const initialStateGenerator = () => {
     );
 };
 const mutator = state => {
-  return Array(STATES)
+  const newPop = Array(STATES)
     .fill(0)
     .map(() =>
       state.slice().map(el => (Math.random() < MUTATION_RATE ? [el[0] + getRandomArbitrary(-0.1, 0.1), el[1] + getRandomArbitrary(-0.1, 0.1)] : el))
     );
+  newPop.push(state);
+  return newPop;
 };
 const fitnessEvaluator = state => {
   const positionArray = speedArrayToPositionArray(state);
@@ -60,16 +62,9 @@ const fitnessEvaluator = state => {
 
 const options = { initialStateGenerator, mutator, fitnessEvaluator };
 const geneticOptimizer = new GeneticOptimizer(options).optimize();
-const smartDotsOptimizer = function*() {
+export default function*() {
   while (true) {
     const speeds = geneticOptimizer.next().value;
     yield { positions: speedArrayToPositionArray(speeds.bestState), popPos: speeds.population.map(state => speedArrayToPositionArray(state)) };
   }
-};
-
-if (typeof window === 'undefined') {
-  module.exports.smartDotsOptimizer = smartDotsOptimizer;
-} else {
-  window.smartDotsOptimizer = smartDotsOptimizer;
-  console.log(window.smartDotsOptimizer);
 }
