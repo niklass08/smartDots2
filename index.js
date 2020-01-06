@@ -30,7 +30,7 @@ const speedArrayToPositionArray = speedArray => {
 const dist = (a, b) => {
   return Math.sqrt((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2);
 };
-const fitPos = (pos, goal) => 1 / (1 + dist(pos, goal));
+const fitPos = goal => pos => 1 / (1 + dist(pos, goal));
 
 const initialStateGenerator = () => {
   return Array(STATES)
@@ -52,12 +52,8 @@ const mutator = state => {
 };
 const fitnessEvaluator = state => {
   const positionArray = speedArrayToPositionArray(state);
-  return positionArray
-    .map(position => fitPos(position, GOAL))
-    .reduce((acc, curr) => {
-      acc = curr > acc ? curr : acc;
-      return acc;
-    }, Number.NEGATIVE_INFINITY);
+  const lastPosition = positionArray[positionArray.length - 1];
+  return fitPos(GOAL)(lastPosition);
 };
 
 const options = { initialStateGenerator, mutator, fitnessEvaluator };
